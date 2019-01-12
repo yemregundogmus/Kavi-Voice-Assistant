@@ -20,6 +20,20 @@ class Features:
         time.sleep(15)
         driver.quit()
 
+    def timefunc(data):
+        time = ctime().split(sep=" ")
+        newtime = time[3]
+        return newtime
+
+    def gunfunc(data):
+        time = ctime().split(sep=" ")
+        if time[1] == "Jan":
+            time[1] = "Ocak"
+        if time[1] == "Feb":
+            time[1] = "Şubat"
+        newtime = time[2] +" "+ time[1] +" "+ time[-1] +" "+ time[3]
+        return newtime
+
     def playyoutube(data):
         global driver
         data = data.split()
