@@ -2,8 +2,10 @@ from Modules.basemodules import Main as m
 from Modules.mainfeatures import Features as f
 from random import randint
 from time import ctime
+import pandas
 import time
 import os
+
 
 nasilsincumeleleri = ["nasılsın","naber","ne haber","napıyorsun","nasıl gidiyor","naber","napıyon","nasıl","nabıyon"] 
 iltifat = ["mükemmelsin","çok iyisin","mükemmel","efsane","saol","teşekkürler","çok","iyi","çok iyi"]
@@ -21,7 +23,11 @@ playlist = ["müzik listemi çal","müzik listem","müzik","playlist","listem","
 haber = ["haberler","haberleri","haber","gündem","gazete","oku","haberleri oku"]
 stopsong = ["şarkıyı kapat","şarkıyı durdur","durdur","kapat"]
 kapatma = ["sistemi kapat","uyu","kendini kapat"]
-kaviopen = ["hey kavi","hey","alo","kavi","açıl","açıl susam açıl"]
+kaviopen = ["hey kavi","hey","alo","kavi","açıl","açıl susam açıl","açın"]
+animsatici = ["anımsatıcı oluştur","anımsatıcı kur","anımsatıcı başlat","anımsatıcı oluş"]
+animsaticioku = ["anımsatıcılarım","anımsatıcımı oku","anımsatıcılar","anımsatıcılarımı oku","anımsatıcı oku","anımsatıcım"]
+
+
 
 def kavi(data):
     if data in nasilsincumeleleri:
@@ -39,7 +45,7 @@ def kavi(data):
         driver = f.playyoutube(data)
     if data in stopsong:
         f.stopsong(driver)
-    if data in search:
+    if data.split() in search:
         f.searchquestion(data)
     if data in tempature:
         f.tempature(data)
@@ -51,17 +57,33 @@ def kavi(data):
         f.emotionplaylist(data)
     if data in haber:
         f.news(data)
-            
+    if data in animsatici:
+        f.animsaticiolustur(data) 
+    if data in animsaticioku:
+        f.animsaticioku(data)
 
 m.speak("Merhaba Emre, Senin için ne yapabilirim")
 while True:
-    data = m.recordAudio()
-    if data in kaviopen:
-        os.system("hello.mp3")
-        time.sleep(0.5)
-        data = m.recordAudio()
-        if data in kapatma:
-            m.speak("Görüşürüz")
-            break
-        else:
-            kavi(data)
+    datax = m.recordAudio()
+    data = pandas.read_excel("animsatici.xlsx")
+    data.Saat = data.Saat.astype(str)
+    if len(data[data.Saat == str(ctime().split(" ")[3][:-3])]) > 0:
+        os.system("animsatici.mp3")
+        time.sleep(1)
+        m.speak("Hey {} adet anımsatıcın var.".format(len(data[data.Saat == str(ctime().split(" ")[3][:-3])])))
+        time.sleep(3)
+        for i in range(0,len(data[data.Saat == str(ctime().split(" ")[3][:-3])])):
+            m.speak(data[data.Saat == str(ctime().split(" ")[3][:-3])].Saat.values[i] +"da"+ data[data.Saat == str(ctime().split(" ")[3][:-3])].Not.values[i])
+            time.sleep(2)
+            continue
+        time.sleep(15)
+    else:
+        if datax in kaviopen:
+            os.system("hello.mp3")
+            time.sleep(0.5)
+            datax = m.recordAudio()
+            if datax in kapatma:
+                m.speak("Görüşürüz")
+                break
+            else: 
+                kavi(datax)

@@ -28,7 +28,7 @@ class Main:
             data = data.lower()
             print("You said: " + data)
         except sr.UnknownValueError:
-            print("Ne Dediğini Anlamadım")
+            print("Ne dediğini anlamadım")
         except sr.RequestError as e:
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
             

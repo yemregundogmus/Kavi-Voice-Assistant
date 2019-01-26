@@ -8,6 +8,9 @@ import selenium
 from selenium import webdriver
 import pyowm
 import http.client
+import pandas
+
+confirm = ["evet","onaylıyorum","onay","evet onaylıyorum","onaylıyorum evet"]
 
 class Features:
 
@@ -33,6 +36,53 @@ class Features:
             time[1] = "Şubat"
         newtime = time[2] +" "+ time[1] +" "+ time[-1] +" "+ time[3]
         return newtime
+
+    def animsaticiolustur(data):
+        try:
+            m.speak("Hangi Saat için Anımsatıcı Kurmak istiyorsun?")
+            time.sleep(5)
+            data2 = m.recordAudio()
+            if "saat" in data2:
+                data2 = data2.split(sep=" ")
+                saat = data2[1]
+            elif "buçuk" in data2.split(sep=" "):
+                saat = data2[0] + ":30"
+            elif "çeyrek" in data2.split(sep=" "):
+                saat = data2[0] + ":15"
+            else:
+                data2 = data2.split(sep=".")
+                if len(data2[0]) == 1:
+                    saat = "0"+data2[0]+":"+data2[1]
+                else:
+                    saat = data2[0] + ":" + data2[1]
+            m.speak("Anımsatıcı Adı Nedir?")
+            time.sleep(1)
+            data3 = m.recordAudio()
+            animsaticinot = data3
+            saat2 = pandas.DataFrame(data=[saat])
+            animsaticinot2 = pandas.DataFrame(data=[animsaticinot])
+            animsaticidatay = pandas.concat([animsaticinot2,saat2],axis=1)
+            animsaticidatay.columns = ["Not", "Saat"]
+            animsaticix = pandas.read_excel("animsatici.xlsx")
+            animsaticidata = pandas.concat([animsaticix,animsaticidatay],axis=0,ignore_index=True)
+            m.speak("Anımsatıcını {} saatine {} notuyla kuruyorum Onaylıyor musun?".format(saat,animsaticinot))
+            time.sleep(6)
+            dataconfirm = m.recordAudio()
+            if dataconfirm in confirm:
+                animsaticidata.to_excel("animsatici.xlsx")
+                m.speak("Anımsatıcın Kuruldu.")
+            else:
+                m.speak("Lütfen Komutları Baştan ver")
+        except:
+            m.speak("Bir Hata Oluştu, Lütfen Komutları Baştan Ver.")
+
+    def animsaticioku(data):
+        m.speak("Anımsatıcıların Şu Şekilde")
+        animsaticidata = pandas.read_excel("animsatici.xlsx")
+        for i in range(0,len(animsaticidata)):
+            print(str(animsaticidata.Saat[i]) +"da"+ str(animsaticidata.Not[i]))
+            m.speak(animsaticidata.Saat[i] +"da"+ animsaticidata.Not[i])
+            time.sleep(3)
 
     def playyoutube(data):
         global driver
