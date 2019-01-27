@@ -1,5 +1,5 @@
-
-<img src="https://raw.githubusercontent.com/unforgiventr/Python-Derin-Ogrenme-The-Crew-Oto-Pilot/master/kavikapak.png" width="300" title="hover text">
+# Kavi Voice Assistant
+<img src="https://raw.githubusercontent.com/unforgiventr/Python-Derin-Ogrenme-The-Crew-Oto-Pilot/master/kavikapak.png" width="200" title="hover text">
 
 
 Yunus Emre Gündoğmuş / Uzay Çetin - Ocak 2019
