@@ -1,7 +1,6 @@
 # Kavi Voice Assistant
 <p align="center">
-  <img src="https://raw.githubusercontent.com/unforgiventr/Python-Derin-Ogrenme-The-Crew-Oto-Pilot/master/kavikapak.png" width="350" title="hover text">
-  <img src="https://raw.githubusercontent.com/unforgiventr/Python-Derin-Ogrenme-The-Crew-Oto-Pilot/master/kavikapak.png" width="350" alt="accessibility text">
+  <img src="https://raw.githubusercontent.com/unforgiventr/Python-Derin-Ogrenme-The-Crew-Oto-Pilot/master/kavikapak.png" width="300" title="hover text">
 </p>
 
 Yunus Emre Gündoğmuş / Uzay Çetin - Ocak 2019
