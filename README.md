@@ -1,5 +1,5 @@
 # Kavi Voice Assistant
-[![image](https://i.hizliresim.com/LlOJRb.png)]
+![image](https://i.hizliresim.com/LlOJRb.png)
 
 Yunus Emre Gündoğmuş / Uzay Çetin - Ocak 2019
 
