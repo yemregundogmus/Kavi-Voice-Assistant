@@ -1,4 +1,4 @@
-from Modules.basemodules import Main as m
+from Modules.basemodules import Backend
 import speech_recognition as sr
 from time import ctime
 import time
@@ -10,38 +10,43 @@ import pyowm
 import http.client
 import pandas
 
-confirm = ["evet","onaylıyorum","onay","evet onaylıyorum","onaylıyorum evet"]
+confirm = ["evet", "onaylıyorum", "onay", "evet onaylıyorum", "onaylıyorum evet"]
+
 
 class Features:
 
-    def mapfeature(data):
+    def __init__(self, multimedia_module):
+        self.mediamodule = multimedia_module
+
+    def mapfeature(self, data):
         data = data.split()
-        location = data[0] #sondan bir öncekiler olmalı
-        m.speak("Bekle Emre Sana " + location +" in nerede olduğunu göstereceğim")
-        driver = webdriver.Chrome('C:/Users/yemre/Desktop/chromedriver.exe')  # Optional argument, if not specified will search path.
+        location = data[0]  # sondan bir öncekiler olmalı
+        self.mediamodule.speak("Bekle Emre Sana " + location + " in nerede olduğunu göstereceğim")
+        driver = webdriver.Chrome(
+            'C:/Users/yemre/Desktop/chromedriver.exe')  # Optional argument, if not specified will search path.
         driver.get("https://www.google.com/maps/place/" + location + "/&amp;");
         time.sleep(15)
         driver.quit()
 
-    def timefunc(data):
+    def timefunc(self, data):
         time = ctime().split(sep=" ")
         newtime = time[3]
         return newtime
 
-    def gunfunc(data):
+    def gunfunc(self, data):
         time = ctime().split(sep=" ")
         if time[1] == "Jan":
             time[1] = "Ocak"
         if time[1] == "Feb":
             time[1] = "Şubat"
-        newtime = time[2] +" "+ time[1] +" "+ time[-1] +" "+ time[3]
+        newtime = time[2] + " " + time[1] + " " + time[-1] + " " + time[3]
         return newtime
 
-    def animsaticiolustur(data):
+    def animsaticiolustur(self, data):
         try:
-            m.speak("Hangi Saat için Anımsatıcı Kurmak istiyorsun?")
+            self.mediamodule.speak("Hangi Saat için Anımsatıcı Kurmak istiyorsun?")
             time.sleep(5)
-            data2 = m.recordAudio()
+            data2 = self.mediamodule.recordAudio()
             if "saat" in data2:
                 data2 = data2.split(sep=" ")
                 saat = data2[1]
@@ -52,78 +57,82 @@ class Features:
             else:
                 data2 = data2.split(sep=".")
                 if len(data2[0]) == 1:
-                    saat = "0"+data2[0]+":"+data2[1]
+                    saat = "0" + data2[0] + ":" + data2[1]
                 else:
                     saat = data2[0] + ":" + data2[1]
-            m.speak("Anımsatıcı Adı Nedir?")
+            self.mediamodule.speak("Anımsatıcı Adı Nedir?")
             time.sleep(1)
-            data3 = m.recordAudio()
+            data3 = self.mediamodule.recordAudio()
             animsaticinot = data3
             saat2 = pandas.DataFrame(data=[saat])
             animsaticinot2 = pandas.DataFrame(data=[animsaticinot])
-            animsaticidatay = pandas.concat([animsaticinot2,saat2],axis=1)
+            animsaticidatay = pandas.concat([animsaticinot2, saat2], axis=1)
             animsaticidatay.columns = ["Not", "Saat"]
             animsaticix = pandas.read_excel("animsatici.xlsx")
-            animsaticidata = pandas.concat([animsaticix,animsaticidatay],axis=0,ignore_index=True)
-            m.speak("Anımsatıcını {} saatine {} notuyla kuruyorum Onaylıyor musun?".format(saat,animsaticinot))
+            animsaticidata = pandas.concat([animsaticix, animsaticidatay], axis=0, ignore_index=True)
+            self.mediamodule.speak("Anımsatıcını {} saatine {} notuyla kuruyorum Onaylıyor musun?".format(saat, animsaticinot))
             time.sleep(6)
-            dataconfirm = m.recordAudio()
+            dataconfirm = self.mediamodule.recordAudio()
             if dataconfirm in confirm:
                 animsaticidata.to_excel("animsatici.xlsx")
-                m.speak("Anımsatıcın Kuruldu.")
+                self.mediamodule.speak("Anımsatıcın Kuruldu.")
             else:
-                m.speak("Lütfen Komutları Baştan ver")
+                self.mediamodule.speak("Lütfen Komutları Baştan ver")
         except:
-            m.speak("Bir Hata Oluştu, Lütfen Komutları Baştan Ver.")
+            self.mediamodule.speak("Bir Hata Oluştu, Lütfen Komutları Baştan Ver.")
 
-    def animsaticioku(data):
-        m.speak("Anımsatıcıların Şu Şekilde")
+    def animsaticioku(self, data):
+        self.mediamodule.speak("Anımsatıcıların Şu Şekilde")
         animsaticidata = pandas.read_excel("animsatici.xlsx")
-        for i in range(0,len(animsaticidata)):
-            print(str(animsaticidata.Saat[i]) +"da"+ str(animsaticidata.Not[i]))
-            m.speak(animsaticidata.Saat[i] +"da"+ animsaticidata.Not[i])
+        for i in range(0, len(animsaticidata)):
+            print(str(animsaticidata.Saat[i]) + "da" + str(animsaticidata.Not[i]))
+            self.mediamodule.speak(animsaticidata.Saat[i] + "da" + animsaticidata.Not[i])
             time.sleep(3)
 
-    def playyoutube(data):
+    def playyoutube(self, data):
         global driver
         data = data.split()
         parcaismi = ""
         for i in data[:-1]:
             parcaismi = parcaismi + i
-        m.speak("Bekle Emre Senin için "+ parcaismi + " yi çalıyorum")
+        self.mediamodule.speak("Bekle Emre Senin için " + parcaismi + " yi çalıyorum")
         driver = webdriver.Chrome('C:/Users/yemre/Desktop/chromedriver.exe')
-        driver.get("https://www.youtube.com/results?search_query="+parcaismi);
+        driver.get("https://www.youtube.com/results?search_query=" + parcaismi);
         select_element = driver.find_elements_by_xpath('//*[@id="video-title"]')
         for option in select_element:
             option.find_element_by_xpath('//*[@id="video-title"]').click()
             break
         return driver
 
-    def stopsong(driver):
+    def stopsong(self, driver):
         driver.quit()
 
-    def searchquestion(data):
+    def searchquestion(self, data):
         data = data.split()
         soru = ""
         for i in data[:-1]:
-            soru = soru +"+"+ i
-        drivery = webdriver.Chrome('C:/Users/yemre/Desktop/chromedriver.exe')# Optional argument, if not specified will search path.
-        drivery.get("http://www.wikizeroo.net/wiki/tr/"+soru);
+            soru = soru + "+" + i
+
+        # TODO: Driver path eklentisi arayuz ile hazırlanabilir.
+        drivery = webdriver.Chrome(
+            'C:/Users/yemre/Desktop/chromedriver.exe')  # Optional argument, if not specified will search path.
+        drivery.get("http://www.wikizeroo.net/wiki/tr/" + soru);
         select_element = drivery.find_elements_by_xpath('//*[@id="mw-content-text"]/div[1]/p[1]')
         for option in select_element:
             x = option.find_element_by_xpath('//*[@id="mw-content-text"]/div[1]/p[1]').text
         if x == None:
-            m.speak("Bunun hakkında birşey bulamadım")
+            self.mediamodule.speak("Bunun hakkında birşey bulamadım")
         else:
-            m.speak("Vikipedia'dan bulduklarıma göre")
-            m.speak(x)
+            self.mediamodule.speak("Vikipedia'dan bulduklarıma göre")
+            self.mediamodule.speak(x)
         time.sleep(5)
-    
-    def tempature(data):
-        owm = pyowm.OWM('c0e97d6ec40865116fea05d55fc64cc7') 
-        m.speak("Neresi için Hava Durumu Öğrenmek istiyorsun?")
+
+    def tempature(self, data):
+        # TODO: Buradaki key public değilse, uygulamaya özel bir key alınabilir.
+        owm = pyowm.OWM('c0e97d6ec40865116fea05d55fc64cc7')
+        self.mediamodule.speak("Neresi için Hava Durumu Öğrenmek istiyorsun?")
         time.sleep(4)
-        data2 = m.recordAudio()
+        data2 = self.mediamodule.recordAudio()
         if data2[0] == "i":
             data2 = "istanbul"
         observation = owm.weather_at_place("{},TR".format(data2))
@@ -132,27 +141,27 @@ class Features:
         tempature = w.get_temperature('celsius')["temp"]
         if detailstat == "light rain" or "light intensity shower rain":
             detailstat = "hafif yağmurlu"
-        m.speak("{} için Hava {} ve {} derece".format(data2,detailstat,tempature))
+        self.mediamodule.speak("{} için Hava {} ve {} derece".format(data2, detailstat, tempature))
         time.sleep(4)
 
-    def createnote(data):
+    def createnote(self, data):
         data = data[7:]
-        file = open("notlar.txt","w")
+        file = open("notlar.txt", "w")
         file.write(str(data.encode("utf-8")))
         file.close()
-        m.speak("Not aldım")
+        self.mediamodule.speak("Not aldım")
 
-    def readnote(data):
-        file = open("notlar.txt","r")
-        m.speak("Notların şu şekilde")
-        m.speak(file.read()[2:-1])
-        m.speak("notların bu kadar")
+    def readnote(self, data):
+        file = open("notlar.txt", "r")
+        self.mediamodule.speak("Notların şu şekilde")
+        self.mediamodule.speak(file.read()[2:-1])
+        self.mediamodule.speak("notların bu kadar")
         time.sleep(3)
 
-    def emotionplaylist(data):
-        m.speak("Hangisini çalayım? Mutlu mu, Normal mi? Depresif mi?")
+    def emotionplaylist(self, data):
+        self.mediamodule.speak("Hangisini çalayım? Mutlu mu, Normal mi? Depresif mi?")
         time.sleep(3)
-        data2 = m.recordAudio()
+        data2 = self.mediamodule.recordAudio()
         driver = webdriver.Chrome('C:/Users/yemre/Desktop/chromedriver.exe')
         if "mutlu" in data2:
             driver.get("https://www.youtube.com/watch?v=uwT2kmral3A&start_radio=1&list=RDMMuwT2kmral3A");
@@ -162,14 +171,14 @@ class Features:
             driver.get("https://www.youtube.com/watch?v=N3oCS85HvpY&start_radio=1&list=RDN3oCS85HvpY");
         return driver
 
-    def news(data):
-        m.speak("İşte senin için birkaç haber")
+    def news(self, data):
+        self.mediamodule.speak("İşte senin için birkaç haber")
         conn = http.client.HTTPSConnection("api.hurriyet.com.tr")
 
         headers = {
             'accept': "application/json",
             'apikey': "a82aa603c5eb49d8891c0dc36c19c44f"
-            }
+        }
 
         conn.request("GET", "/v1/articles?%24select=Id&%24top=42&%24skip=0", headers=headers)
 
@@ -181,9 +190,9 @@ class Features:
         Id3 = data.decode("utf-8")[44:-705]
         Id4 = data.decode("utf-8")[62:-687]
         Id5 = data.decode("utf-8")[80:-669]
-        Idlist = [Id1,Id2,Id3,Id4,Id5]
+        Idlist = [Id1, Id2, Id3, Id4, Id5]
 
-        basliklar,aciklamalar = [],[]
+        basliklar, aciklamalar = [], []
         for i in Idlist:
             conn1 = http.client.HTTPSConnection("api.hurriyet.com.tr")
             conn2 = http.client.HTTPSConnection("api.hurriyet.com.tr")
@@ -191,7 +200,7 @@ class Features:
             headers = {
                 'accept': "application/json",
                 'apikey': "a82aa603c5eb49d8891c0dc36c19c44f"
-                }
+            }
 
             conn1.request("GET", "/v1/articles/{}?%24select=Title".format(i), headers=headers)
             conn2.request("GET", "/v1/articles/{}?%24select=Description".format(i), headers=headers)
@@ -205,8 +214,8 @@ class Features:
 
             basliklar.append(baslik)
             aciklamalar.append(aciklama)
-        for i in range(0,len(basliklar)):
-            m.speak(basliklar[i])
+        for i in range(0, len(basliklar)):
+            self.mediamodule.speak(basliklar[i])
             time.sleep(4)
-            m.speak(aciklamalar[i])
+            self.mediamodule.speak(aciklamalar[i])
             time.sleep(15)

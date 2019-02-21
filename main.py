@@ -1,5 +1,5 @@
-from Modules.basemodules import Main as m
-from Modules.mainfeatures import Features as f
+from Modules.basemodules import Backend
+from Modules.mainfeatures import Features
 from random import randint
 from time import ctime
 import pandas
@@ -7,7 +7,7 @@ import time
 import os
 
 
-nasilsincumeleleri = ["nasılsın","naber","ne haber","napıyorsun","nasıl gidiyor","naber","napıyon","nasıl","nabıyon"] 
+nasilsincumeleleri = ["nasılsın","naber","ne haber","napıyorsun","nasıl gidiyor","naber","napıyon","nasıl","nabıyon"]
 iltifat = ["mükemmelsin","çok iyisin","mükemmel","efsane","saol","teşekkürler","çok","iyi","çok iyi"]
 donus = ["iyiyim sen","çok iyiyim","biraz keyifsizim"]
 donustesekkur = ["Çok teşekkürler","beni utandırıyorsun","utandım","teşekkürler","yardımcı olabildiysem ne mutlu bana"]
@@ -29,61 +29,68 @@ animsaticioku = ["anımsatıcılarım","anımsatıcımı oku","anımsatıcılar"
 
 
 
-def kavi(data):
+def kavi(media, utility, data):
     if data in nasilsincumeleleri:
-        m.speak(donus[randint(0,2)])
+        media.speak(donus[randint(0, 2)])
     if data in iltifat:
-        m.speak(donustesekkur[randint(0,4)])
+        media.speak(donustesekkur[randint(0, 4)])
     if data in saat:
-        m.speak(f.timefunc(data))
+        media.speak(utility.timefunc(data))
     if data in gun:
-        m.speak(f.gunfunc(data))
+        media.speak(utility.gunfunc(data))
     if data in maps:
-        f.mapfeature(data)
+        utility.mapfeature(data)
     if data in playyoutube:
         global driver
-        driver = f.playyoutube(data)
+        driver = utility.playyoutube(data)
     if data in stopsong:
-        f.stopsong(driver)
+        utility.stopsong(driver)
     if data.split() in search:
-        f.searchquestion(data)
+        utility.searchquestion(data)
     if data in tempature:
-        f.tempature(data)
+        utility.tempature(data)
     if data in note:
-        f.createnote(data)
+        utility.createnote(data)
     if data in noteread:
-        f.readnote(data)
+        utility.readnote(data)
     if data in playlist:
-        f.emotionplaylist(data)
+        utility.emotionplaylist(data)
     if data in haber:
-        f.news(data)
+        utility.news(data)
     if data in animsatici:
-        f.animsaticiolustur(data) 
+        utility.animsaticiolustur(data)
     if data in animsaticioku:
-        f.animsaticioku(data)
+        utility.animsaticioku(data)
 
-m.speak("Merhaba Emre, Senin için ne yapabilirim")
-while True:
-    datax = m.recordAudio()
-    data = pandas.read_excel("animsatici.xlsx")
-    data.Saat = data.Saat.astype(str)
-    if len(data[data.Saat == str(ctime().split(" ")[3][:-3])]) > 0:
-        os.system("animsatici.mp3")
-        time.sleep(1)
-        m.speak("Hey {} adet anımsatıcın var.".format(len(data[data.Saat == str(ctime().split(" ")[3][:-3])])))
-        time.sleep(3)
-        for i in range(0,len(data[data.Saat == str(ctime().split(" ")[3][:-3])])):
-            m.speak(data[data.Saat == str(ctime().split(" ")[3][:-3])].Saat.values[i] +"da"+ data[data.Saat == str(ctime().split(" ")[3][:-3])].Not.values[i])
-            time.sleep(2)
-            continue
-        time.sleep(15)
-    else:
-        if datax in kaviopen:
-            os.system("hello.mp3")
-            time.sleep(0.5)
-            datax = m.recordAudio()
-            if datax in kapatma:
-                m.speak("Görüşürüz")
-                break
-            else: 
-                kavi(datax)
+
+
+if __name__ == '__main__':
+    mediamodule = Backend()
+    utilitymodule = Features(mediamodule)
+
+    mediamodule.speak("Merhaba Emre, Senin için ne yapabilirim")
+    while True:
+        datax = mediamodule.recordAudio()
+        data = pandas.read_excel("animsatici.xlsx")
+        data.Saat = data.Saat.astype(str)
+        if len(data[data.Saat == str(ctime().split(" ")[3][:-3])]) > 0:
+            mediamodule.playSound("animsatici.mp3")
+            time.sleep(1)
+            mediamodule.speak("Hey {} adet anımsatıcın var.".format(len(data[data.Saat == str(ctime().split(" ")[3][:-3])])))
+            time.sleep(3)
+            for i in range(0, len(data[data.Saat == str(ctime().split(" ")[3][:-3])])):
+                mediamodule.speak(data[data.Saat == str(ctime().split(" ")[3][:-3])].Saat.values[i] + "da" +
+                                  data[data.Saat == str(ctime().split(" ")[3][:-3])].Not.values[i])
+                time.sleep(2)
+                continue
+            time.sleep(15)
+        else:
+            if datax in kaviopen:
+                mediamodule.playSound("hello.mp3")
+                time.sleep(0.5)
+                datax = mediamodule.recordAudio()
+                if datax in kapatma:
+                    mediamodule.speak("Görüşürüz")
+                    break
+                else:
+                    kavi(mediamodule, utilitymodule, datax)
